@@ -1,0 +1,8 @@
+langchain
+chromadb
+faiss-cpu
+groq
+huggingface-hub
+pandas
+openpyxl
+python-dotenv
