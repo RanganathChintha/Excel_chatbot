@@ -1,8 +1,15 @@
 langchain
+langchain-chroma
+langchain-community
+langchain-groq
 chromadb
 faiss-cpu
 groq
 huggingface-hub
 pandas
 openpyxl
+xlrd
+pyxlsb
+odfpy
 python-dotenv
+sentence-transformers

@@ -1,16 +1,24 @@
-from groq import Groq
+from langchain_groq import ChatGroq
+
 from config import GROQ_API_KEY, SCOUT_MODEL
+
 
 class ScoutModel:
     def __init__(self):
-        self.client = Groq(api_key=GROQ_API_KEY)
-        self.model = SCOUT_MODEL
+        self.client = ChatGroq(
+            model=SCOUT_MODEL,
+            api_key=GROQ_API_KEY,
+            max_tokens=512,
+            timeout=60,
+        )
 
     def process(self, text: str) -> str:
         """Process text using Scout model."""
-        message = self.client.messages.create(
-            model=self.model,
-            messages=[{"role": "user", "content": text}],
-            max_tokens=1024,
+        prompt = (
+            "Clean and preserve the useful information from this spreadsheet "
+            "chunk for retrieval. Keep names, numbers, dates, and relationships. "
+            "Do not add facts.\n\n"
+            f"{text}"
         )
-        return message.content[0].text
+        message = self.client.invoke(prompt)
+        return message.content
