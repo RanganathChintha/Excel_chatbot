@@ -2,6 +2,7 @@ langchain
 langchain-chroma
 langchain-community
 langchain-groq
+langsmith>=0.1.98
 chromadb
 faiss-cpu
 groq

@@ -4,6 +4,11 @@ from text_processing import TextSplitter
 from embeddings import Embedder
 from vectorstore import ChromaVectorStore
 from retriever import FAISSRetriever
+from langsmith import traceable
+
+from utils.tracing import ingest_inputs
+
+
 class RAGChain:
     def __init__(self, use_scout_processing: bool = False):
         print("Initializing RAG chain...", flush=True)
@@ -16,6 +21,7 @@ class RAGChain:
         self.retriever = FAISSRetriever()
         print("RAG chain initialized.", flush=True)
 
+    @traceable(name="RAG Ingest", run_type="chain", process_inputs=ingest_inputs)
     def ingest(self, excel_file_path: str):
         """
         Chain: excel_loader -> text_splitter -> scout_model ->
@@ -66,6 +72,11 @@ class RAGChain:
 
         return len(chunks)
 
+    @traceable(
+        name="RAG Query",
+        run_type="chain",
+        process_outputs=lambda output: {"answer": output},
+    )
     def query(self, query_text: str, llm_model: LLMModel) -> str:
         """
         Chain: query -> embedder -> retriever -> llm

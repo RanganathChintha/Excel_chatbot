@@ -1,6 +1,9 @@
 from .settings import (
     HUGGINGFACE_API_KEY,
     GROQ_API_KEY,
+    LANGSMITH_API_KEY,
+    LANGSMITH_TRACING,
+    LANGSMITH_PROJECT,
     SCOUT_MODEL,
     EMBEDDER_MODEL,
     LLM_MODEL,
@@ -11,6 +14,9 @@ from .settings import (
 __all__ = [
     "HUGGINGFACE_API_KEY",
     "GROQ_API_KEY",
+    "LANGSMITH_API_KEY",
+    "LANGSMITH_TRACING",
+    "LANGSMITH_PROJECT",
     "SCOUT_MODEL",
     "EMBEDDER_MODEL",
     "LLM_MODEL",

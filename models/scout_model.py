@@ -1,6 +1,8 @@
 from langchain_groq import ChatGroq
+from langsmith import traceable
 
 from config import GROQ_API_KEY, SCOUT_MODEL
+from utils.tracing import string_output, text_input
 
 
 class ScoutModel:
@@ -12,6 +14,13 @@ class ScoutModel:
             timeout=60,
         )
 
+    @traceable(
+        name="Scout Preprocess Chunk",
+        run_type="llm",
+        metadata={"model": SCOUT_MODEL},
+        process_inputs=text_input,
+        process_outputs=string_output,
+    )
     def process(self, text: str) -> str:
         """Process text using Scout model."""
         prompt = (

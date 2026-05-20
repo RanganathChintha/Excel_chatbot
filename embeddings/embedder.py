@@ -1,8 +1,10 @@
 from typing import List
 
 from sentence_transformers import SentenceTransformer
+from langsmith import traceable
 
 from config import EMBEDDER_MODEL
+from utils.tracing import embeddings_output, text_input, texts_input
 
 
 class Embedder:
@@ -10,11 +12,23 @@ class Embedder:
         print(f"Loading embedding model: {EMBEDDER_MODEL}", flush=True)
         self.model = SentenceTransformer(EMBEDDER_MODEL)
 
+    @traceable(
+        name="Embed Query",
+        run_type="embedding",
+        process_inputs=text_input,
+        process_outputs=lambda output: {"dimension": len(output)},
+    )
     def embed(self, text: str) -> List[float]:
         """Generate embedding for a single text."""
         embedding = self.model.encode(text, convert_to_numpy=True)
         return embedding.astype("float32").tolist()
 
+    @traceable(
+        name="Embed Chunks",
+        run_type="embedding",
+        process_inputs=texts_input,
+        process_outputs=embeddings_output,
+    )
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
         """Generate embeddings for multiple texts."""
         total = len(texts)

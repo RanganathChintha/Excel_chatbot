@@ -2,6 +2,10 @@ import pandas as pd
 from typing import List, Dict
 from pathlib import Path
 
+from langsmith import traceable
+
+from utils.tracing import ingest_inputs, records_output, string_output
+
 
 class ExcelLoader:
     SUPPORTED_EXTENSIONS = {".csv", ".tsv", ".xlsx", ".xls", ".xlsm", ".xlsb", ".ods"}
@@ -24,6 +28,12 @@ class ExcelLoader:
         return pd.read_excel(path, sheet_name=None)
 
     @staticmethod
+    @traceable(
+        name="Load Spreadsheet Records",
+        run_type="tool",
+        process_inputs=ingest_inputs,
+        process_outputs=records_output,
+    )
     def load(file_path: str) -> List[Dict[str, str]]:
         """Load spreadsheet file and return list of dictionaries."""
         records = []
@@ -35,6 +45,12 @@ class ExcelLoader:
         return records
 
     @staticmethod
+    @traceable(
+        name="Load Spreadsheet Text",
+        run_type="tool",
+        process_inputs=ingest_inputs,
+        process_outputs=string_output,
+    )
     def load_as_text(file_path: str) -> str:
         """Load spreadsheet file and convert to text format."""
         sections = []

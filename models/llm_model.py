@@ -1,6 +1,8 @@
 from langchain_groq import ChatGroq
+from langsmith import traceable
 
 from config import GROQ_API_KEY, LLM_MODEL
+from utils.tracing import llm_inputs, string_output
 
 
 class LLMModel:
@@ -13,6 +15,13 @@ class LLMModel:
             timeout=60,
         )
 
+    @traceable(
+        name="Generate Answer",
+        run_type="llm",
+        metadata={"model": LLM_MODEL},
+        process_inputs=llm_inputs,
+        process_outputs=string_output,
+    )
     def generate(self, context: str, query: str) -> str:
         """Generate response using LLM model with retrieved context."""
         prompt = f"""

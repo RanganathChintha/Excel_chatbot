@@ -12,6 +12,7 @@ The answer model is prompted to stay strict: it should answer only from the retr
 - Stores chunks in Chroma and FAISS.
 - Runs an interactive question loop.
 - Uses `ChatGroq` for answer generation.
+- Traces ingestion, retrieval, embeddings, and LLM calls with LangSmith.
 
 ## Project Structure
 
@@ -43,9 +44,13 @@ Create a `.env` file in the project root:
 ```env
 GROQ_API_KEY=your_groq_api_key
 HUGGINGFACE_API_KEY=your_huggingface_api_key
+LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=your_langsmith_api_key
+LANGSMITH_PROJECT=excel-chatbot
 ```
 
 `GROQ_API_KEY` is required for the LLM. `HUGGINGFACE_API_KEY` is currently loaded by settings, but embeddings run locally through `sentence-transformers`.
+LangSmith tracing is optional. Set `LANGSMITH_TRACING=true` and provide `LANGSMITH_API_KEY` to send traces to LangSmith. `LANGSMITH_PROJECT` controls which LangSmith project receives the traces.
 
 ## Usage
 
@@ -83,6 +88,16 @@ FAISS_INDEX_PATH = "./faiss_index"
 ```
 
 Scout preprocessing is disabled by default in `RAGChain` to keep ingestion faster and avoid large Groq requests. Raw file chunks are embedded directly.
+
+## LangSmith Tracing
+
+This project uses LangSmith's `@traceable` instrumentation around the main RAG workflow:
+
+- `RAG Ingest`: spreadsheet load, text split, optional Scout preprocessing, embeddings, Chroma upsert, FAISS add, and persistence.
+- `RAG Query`: query embedding, FAISS retrieval, and answer generation.
+- Model calls through `ChatGroq` are also traceable by LangChain when LangSmith tracing is enabled.
+
+Large payloads such as spreadsheet text and embedding vectors are summarized before being logged, so traces stay readable while still showing counts, dimensions, distances, and short previews.
 
 ## Notes
 
